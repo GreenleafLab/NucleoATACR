@@ -1,0 +1,10 @@
+Package: NucleoATACR
+Type: Package
+Title: Work with outputs of NucleoATAC python package in R
+Version: 1.0
+Date: 2015-05-28
+Author: Alicia Schep
+Maintainer: AliciaSchep <NucleoATACR@aschep.com>
+Description: Package to work with outputs of NucleoATAC python package. Includes functions for reading in outputs, plotting, etc.
+License: MIT
+Imports: Rsamtools, GenomicRanges
