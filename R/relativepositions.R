@@ -71,8 +71,29 @@ distRanges <- function(ranges1,ranges2, strand = 0){
   return(dists)
 }
 
-
-
+#' shiftRanges
+#'
+#' @param ranges GRanges object 
+#' @param shift amount by which to shift ranges (negative means shift upstream, positive downstream)
+#' @return returns GRanges object for which each range has been shifted appropriately
+#' @seealso \code{\link{get_m1_nucs}} \code{\link{get_p1_nucs}} \code{\link{distRanges}} 
+#' @export
+shiftRanges <- function(ranges, shift = 0){
+  minus <- which(strand(ranges)=="-")
+  if (shift<0){
+    end(ranges[minus]) = end(ranges[minus]) - shift
+    start(ranges[minus]) = start(ranges[minus]) - shift
+    start(ranges[-minus]) = start(ranges[-minus]) + shift
+    end(ranges[-minus]) = end(ranges[-minus]) + shift
+  }
+  else{
+    start(ranges[minus]) = start(ranges[minus]) - shift
+    end(ranges[minus]) = end(ranges[minus]) - shift
+    end(ranges[-minus]) = end(ranges[-minus]) + shift
+    start(ranges[-minus]) = start(ranges[-minus]) + shift
+  }
+  return(ranges)
+}
 
 
 #' get_p1_nucs
@@ -81,16 +102,23 @@ distRanges <- function(ranges1,ranges2, strand = 0){
 #' @param sites GRanges object with sites to get +1 nucs from.
 #' @param annotate_sites what to return-- sites with +1 nuc annotation or +1 nucs?
 #' @param max_dist what is maximum distance to consider
+#' @param shift integer shift to apply to sites before finding -1
 #' @return returns either subset of nucs that are +1 or annotated version of sites
 #' @seealso \code{\link{get_m1_nucs}} 
 #' @export
-get_p1_nuc<-function(nucs.ranges,sites, annotate_sites = F, max_dist = 250){
-  plus=which(strand(sites)!="-")
-  minus=which(strand(sites)=="-")
-  
-  p1 = precede(sites,nucs.ranges)
+get_p1_nuc<-function(nucs.ranges, sites, annotate_sites = F, max_dist = 250, shift = 0){
+  plus=which(strand(sites) != "-")
+  minus=which(strand(sites) == "-")
+  if (shift!=0){
+     p1 = precede(shiftRanges(sites,shift), nucs.ranges)
+  }
+  else{
+      p1 = precede(sites,nucs.ranges)  
+  }  
   p1_nna = which(!is.na(p1))
-  p1_nna = p1_nna[which(seqnames(nucs.ranges[p1[p1_nna]])==seqnames(sites[p1_nna]))]
+  if (length(p1_nna)>0){
+      p1_nna = p1_nna[which(as.character(seqnames(nucs.ranges[p1[p1_nna]]))==as.character(seqnames(sites[p1_nna])))]
+  }
   if (annotate_sites){
     sites$p1 = NA
     sites$p1[p1_nna] = start(nucs.ranges[p1[p1_nna]])
@@ -98,15 +126,13 @@ get_p1_nuc<-function(nucs.ranges,sites, annotate_sites = F, max_dist = 250){
     sites$p1_ix[p1_nna] = p1[p1_nna]  
     sites$p1_dist = NA
     p1_dist = rep(NA,length(sites))
-    p1_dist[intersect(p1_nna,plus)] = start(nucs.ranges[p1[intersect(p1_nna,plus)]])-start(sites[intersect(p1_nna,plus)])
-    p1_dist[intersect(p1_nna,minus)] = start(sites[intersect(p1_nna,minus)])-start(nucs.ranges[p1[intersect(p1_nna,minus)]])
+    p1_dist[p1_nna] = distRanges(sites[p1_nna], nucs.ranges[p1[p1_nna]], strand = 1)
     close = which(p1_dist[p1_nna] <= max_dist)
     sites$p1_dist[p1_nna[close]]=p1_dist[p1_nna[close]]
     return(sites)
   } else{
     p1_dist = rep(NA,length(sites))
-    p1_dist[intersect(p1_nna,plus)] = start(nucs.ranges[p1[intersect(p1_nna,plus)]])-start(sites[intersect(p1_nna,plus)])
-    p1_dist[intersect(p1_nna,minus)] = start(sites[intersect(p1_nna,minus)])-start(nucs.ranges[p1[intersect(p1_nna,minus)]])
+    p1_dist[p1_nna] = distRanges(sites[p1_nna], nucs.ranges[p1[p1_nna]], strand = 1)
     close = which(p1_dist[p1_nna] <= max_dist)
     p1_nucs = nucs.ranges[p1[p1_nna[close]]]
     strand(p1_nucs)=strand(sites)[p1_nna[close]]
@@ -121,16 +147,22 @@ get_p1_nuc<-function(nucs.ranges,sites, annotate_sites = F, max_dist = 250){
 #' @param sites GRanges object with sites to get -1 nucs from.
 #' @param annotate_sites what to return-- sites with -1 nuc annotation or +1 nucs?
 #' @param max_dist what is maximum distance to consider
+#' @param shift integer shift to apply to sites before finding -1
 #' @return returns either subset of nucs that are -1 or annotated version of sites
 #' @seealso \code{\link{get_p1_nucs}} 
 #' @export
-get_m1_nuc<-function(nucs.ranges,sites, annotate_sites = F, max_dist = 350){
+get_m1_nuc<-function(nucs.ranges,sites, annotate_sites = F, max_dist = 350, shift = 0){
   plus=which(strand(sites)!="-")
   minus=which(strand(sites)=="-")
-  
+  if (shift!=0){
+    m1 = follow(shiftRanges(sites,shift), nucs.ranges)
+  }
+  else{
+    m1 = follow(sites,nucs.ranges)  
+  }    
   m1 = follow(sites,nucs.ranges)
   m1_nna = which(!is.na(m1))
-  m1_nna = m1_nna[which(seqnames(nucs.ranges[m1[m1_nna]])==seqnames(sites[m1_nna]))]
+  m1_nna = m1_nna[which(as.character(seqnames(nucs.ranges[m1[m1_nna]]))==as.character(seqnames(sites[m1_nna])))]
   if (annotate_sites){
     sites$m1 = NA
     sites$m1[m1_nna] = start(nucs.ranges[m1[m1_nna]])
@@ -138,15 +170,13 @@ get_m1_nuc<-function(nucs.ranges,sites, annotate_sites = F, max_dist = 350){
     sites$m1_ix[m1_nna] = m1[m1_nna]
     sites$m1_dist = NA
     m1_dist= rep(NA,length(sites))
-    m1_dist[intersect(m1_nna,plus)] = start(nucs.ranges[m1[intersect(m1_nna,plus)]])-start(sites[intersect(m1_nna,plus)])
-    m1_dist[intersect(m1_nna,minus)] = start(sites[intersect(m1_nna,minus)])-start(nucs.ranges[m1[intersect(m1_nna,minus)]])    
+    m1_dist[m1_nna] = distRanges(sites[m1_nna], nucs.ranges[m1[m1_nna]], strand = 1)
     close = which(m1_dist[m1_nna] >= -1*max_dist)
     sites$m1_dist[m1_nna[close]] = m1_dist[m1_nna[close]]
     return(sites)
   } else{
     m1_dist= rep(NA,length(sites))
-    m1_dist[intersect(m1_nna,plus)] = start(nucs.ranges[m1[intersect(m1_nna,plus)]])-start(sites[intersect(m1_nna,plus)])
-    m1_dist[intersect(m1_nna,minus)] = start(sites[intersect(m1_nna,minus)])-start(nucs.ranges[m1[intersect(m1_nna,minus)]])
+    m1_dist[m1_nna] = distRanges(sites[m1_nna], nucs.ranges[m1[m1_nna]], strand = 1)
     close = which(m1_dist[m1_nna] >= -1*max_dist)
     m1_nucs = nucs.ranges[m1[m1_nna[close]]]
     strand(m1_nucs)=strand(sites)[m1_nna[close]]

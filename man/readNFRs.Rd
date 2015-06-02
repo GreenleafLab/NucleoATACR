@@ -4,12 +4,12 @@
 \alias{readNFRs}
 \title{readNFRs}
 \usage{
-readNFRs(nucfile, format = "GRanges")
+readNFRs(nfrfile, format = "GRanges")
 }
 \arguments{
-\item{format}{desired object type, either data.frame or GRanges}
-
 \item{nfrfile}{file of nucleosome positions from NucleoATAC}
+
+\item{format}{desired object type, either data.frame or GRanges}
 }
 \value{
 returns object of type specified by format, either data.frame or GRanges

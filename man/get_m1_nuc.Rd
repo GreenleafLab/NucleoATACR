@@ -4,7 +4,8 @@
 \alias{get_m1_nuc}
 \title{get_m1_nucs}
 \usage{
-get_m1_nuc(nucs.ranges, sites, annotate_sites = F, max_dist = 350)
+get_m1_nuc(nucs.ranges, sites, annotate_sites = F, max_dist = 350,
+  shift = 0)
 }
 \arguments{
 \item{sites}{GRanges object with sites to get -1 nucs from.}
@@ -12,6 +13,8 @@ get_m1_nuc(nucs.ranges, sites, annotate_sites = F, max_dist = 350)
 \item{annotate_sites}{what to return-- sites with -1 nuc annotation or +1 nucs?}
 
 \item{max_dist}{what is maximum distance to consider}
+
+\item{shift}{integer shift to apply to sites before finding -1}
 
 \item{nuc.ranges}{GRanges object with nucleosome positions}
 }
