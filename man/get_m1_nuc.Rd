@@ -2,7 +2,7 @@
 % Please edit documentation in R/relativepositions.R
 \name{get_m1_nuc}
 \alias{get_m1_nuc}
-\title{get_m1_nucs}
+\title{get_m1_nuc}
 \usage{
 get_m1_nuc(nucs.ranges, sites, annotate_sites = F, max_dist = 350,
   shift = 0)
@@ -22,7 +22,7 @@ get_m1_nuc(nucs.ranges, sites, annotate_sites = F, max_dist = 350,
 returns either subset of nucs that are -1 or annotated version of sites
 }
 \description{
-get_m1_nucs
+get_m1_nuc
 }
 \seealso{
 \code{\link{get_p1_nucs}}

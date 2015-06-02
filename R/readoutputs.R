@@ -9,13 +9,13 @@
 readNucs<-function(nucfile, out = "GRanges"){
   out = as.character(out)
   if (grepl("nucpos.bed",nucfile)){
-    nucDF=read_tsv(nucfile,col_names = c('chr','start','end',"z","occ","occ_lower","occ_upper","lr","nuc_signal","raw_signal","reads","nfr","fuzz"))   
+    nucDF=readr::read_tsv(nucfile,col_names = c('chr','start','end',"z","occ","occ_lower","occ_upper","lr","nuc_signal","raw_signal","reads","nfr","fuzz"))   
   }
   else if (grepl("nucmap_combined.bed",nucfile)){
-    nucDF=read_tsv(nucfile,col_names = c('chr','start','end',"occ","occ_lower","occ_upper","reads","type"))       
+    nucDF=readr::read_tsv(nucfile,col_names = c('chr','start','end',"occ","occ_lower","occ_upper","reads","type"))       
   }
   else if (grepl("occpeaks.bed",nucfile)){
-    nucDF=read_tsv(nucfile,col_names = c('chr','start','end',"occ","occ_lower","occ_upper","reads"))       
+    nucDF=readr::read_tsv(nucfile,col_names = c('chr','start','end',"occ","occ_lower","occ_upper","reads"))       
   }
   else{
     stop("File name doesn't seem to include stantard format of NucleoATAC output")
@@ -65,7 +65,7 @@ readNucs<-function(nucfile, out = "GRanges"){
 #' @export
 readNFRs<-function(nfrfile, format = "GRanges"){
   format = as.character(format)
-  nfrDF=read_tsv(nfrfile,col_names = c('chr','start','end',"z","occ","min_occ_lower","min_occ_upper"))
+  nfrDF=readr::read_tsv(nfrfile,col_names = c('chr','start','end',"z","occ","min_occ_lower","min_occ_upper"))
   if (format=="data.frame"){
     return(nfrDF)
   }
@@ -91,7 +91,7 @@ readNFRs<-function(nfrfile, format = "GRanges"){
 #' @seealso \code{\link{readNucs}}  \code{\link{readNFRs}}
 #' @export
 readBedgraph<-function(bgfile, chrom, start, end, empty = NA){
-  tmp = scanTabix(bgfile, param = GRanges(chrom, IRanges(start,end-1)))
+  tmp = Rsamtools::scanTabix(bgfile, param = GRanges(chrom, IRanges(start,end-1)))
   out = rep(empty, end - start)
   for (rec in tmp[[1]]){
     vals = as.numeric(strsplit(rec,"\t")[[1]][2:4])

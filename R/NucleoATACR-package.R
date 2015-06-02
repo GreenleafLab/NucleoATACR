@@ -4,7 +4,6 @@
 #'
 #' 
 #' @author Alicia Schep
-#' @export
 #' @seealso \code{\link{readNucs}}, \code{\link{readNFRs}}, \code{\link{plotV}}
 #' @name NucleoATACR
 NULL
