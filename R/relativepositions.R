@@ -3,15 +3,15 @@
 #' get_dist_between_calls
 #'
 #' @param ranges GRanges object 
-#' @param max_dist to consider
+#' @param max_dist maximum distance to consider
 #' @return returns tabulated distance between calls
 #' @seealso \code{\link{distRanges}} 
 #' @export
 get_dist_between_calls<- function(ranges, max_dist = 1000){
   sep = BiocGenerics::start(ranges)[2:(length(ranges))] - BiocGenerics::end(ranges)[1:(length(ranges)-1)] 
-  chrom_same = which(GenomicRanges::seqnames(ranges)[1:(length(ranges)-1)] == GenomicRanges::seqnames(ranges)[2:(length(ranges))])
+  chrom_same = which(as.character(GenomicRanges::seqnames(ranges))[1:(length(ranges)-1)] == as.character(GenomicRanges::seqnames(ranges))[2:(length(ranges))])
   close = intersect(which(sep < max_dist),chrom_same)
-  return(tabulate(sep[close]))
+  return(tabulate2(sep[close],1,max_dist))
 }
 
 #' getstrand
@@ -36,10 +36,11 @@ distRanges <- function(ranges1,ranges2, strand = 0){
   ranges1_mod = ranges1
   BiocGenerics::strand(ranges1_mod)="*"
   neighbor = nearest(ranges1_mod,ranges2)  
+  nna = which(!is.na(neighbor))
   if (strand == 2){
     dists = rep(NA,length(ranges1))
-    plus = which(getstrand(ranges2)[neighbor]!="-")
-    minus = which(getstrand(ranges2)[neighbor]=="-")
+    plus = intersect(which(getstrand(ranges2)[neighbor]!="-"),nna)
+    minus = intersect(which(getstrand(ranges2)[neighbor]=="-"),nna)
     dists[minus] = ifelse(overlapsAny(ranges1[minus],ranges2[neighbor[minus]]),
                           0,
                           ifelse(BiocGenerics::start(ranges2[neighbor[minus]])>BiocGenerics::start(ranges1[minus]),
@@ -52,16 +53,17 @@ distRanges <- function(ranges1,ranges2, strand = 0){
                                 BiocGenerics::start(ranges1)[plus] - BiocGenerics::end(ranges2)[neighbor[plus]]))                    
   } 
   else if (strand == 0){
-    dists = ifelse(overlapsAny(ranges1,ranges2[neighbor]),
+    dists = rep(NA,length(ranges1))
+    dists[nna] = ifelse(overlapsAny(ranges1[nna],ranges2[neighbor[nna]]),
                          0,
-                         ifelse(BiocGenerics::start(ranges2[neighbor])>BiocGenerics::start(ranges1),
-                                BiocGenerics::end(ranges1) - BiocGenerics::start(ranges2)[neighbor],
-                                BiocGenerics::start(ranges1) - BiocGenerics::end(ranges2)[neighbor]))                    
+                         ifelse(BiocGenerics::start(ranges2[neighbor[nna]])>BiocGenerics::start(ranges1[nna]),
+                                BiocGenerics::end(ranges1[nna]) - BiocGenerics::start(ranges2)[neighbor[nna]],
+                                BiocGenerics::start(ranges1[nna]) - BiocGenerics::end(ranges2)[neighbor[nna]]))                    
   }
   else if (strand ==1){
     dists = rep(NA,length(ranges1))
-    plus = which(getstrand(ranges1)!="-")
-    minus = which(getstrand(ranges1)=="-")
+    plus = intersect(which(getstrand(ranges1)!="-"), nna)
+    minus = intersect(which(getstrand(ranges1)=="-"), nna)
     dists[plus] = ifelse(overlapsAny(ranges1[plus],ranges2[neighbor[plus]]),
                           0,
                           ifelse(BiocGenerics::start(ranges2[neighbor[plus]])>BiocGenerics::start(ranges1[plus]),
@@ -174,7 +176,6 @@ get_m1_nuc<-function(nucs.ranges,sites, annotate_sites = F, max_dist = 350, shif
   else{
     m1 = follow(sites,nucs.ranges)  
   }    
-  m1 = follow(sites,nucs.ranges)
   m1_nna = which(!is.na(m1))
   m1_nna = m1_nna[which(as.character(GenomicRanges::seqnames(nucs.ranges[m1[m1_nna]]))==as.character(GenomicRanges::seqnames(sites[m1_nna])))]
   if (annotate_sites){

@@ -9,7 +9,7 @@ get_dist_between_calls(ranges, max_dist = 1000)
 \arguments{
 \item{ranges}{GRanges object}
 
-\item{max_dist}{to consider}
+\item{max_dist}{maximum distance to consider}
 }
 \value{
 returns tabulated distance between calls

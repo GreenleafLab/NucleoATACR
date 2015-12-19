@@ -25,7 +25,7 @@ readNucs<-function(nucfile, out = "GRanges"){
   }
   else if (out=="GRanges"){
     if (grepl("nucpos.bed",nucfile)){   
-      nucGR = with(nucDF,GRanges(chr,IRanges(start,start), 
+      nucGR = with(nucDF,GenomicRanges::GRanges(chr,IRanges(start,start), 
                         z=z, 
                         occ = occ, 
                         occ_lower = occ_lower, 
@@ -38,14 +38,14 @@ readNucs<-function(nucfile, out = "GRanges"){
                         fuzz=fuzz))
     }
     else if (grepl("nucmap_combined.bed",nucfile)){
-      nucGR = with(nucDF,GRanges(chr,IRanges(start,start), 
+      nucGR = with(nucDF,GenomicRanges::GRanges(chr,IRanges(start,start), 
                              occ = occ, 
                              occ_lower = occ_lower, 
                              occ_upper = occ_upper, 
                              type = type))      
     }
     else if (grepl("occpeaks.bed",nucfile)){
-      nucGR = with(nucDF,GRanges(chr,IRanges(start,start), 
+      nucGR = with(nucDF,GenomicRanges::GRanges(chr,IRanges(start,start), 
                                  occ = occ, 
                                  occ_lower = occ_lower, 
                                  occ_upper = occ_upper))      
@@ -65,15 +65,30 @@ readNucs<-function(nucfile, out = "GRanges"){
 #' @export
 readNFRs<-function(nfrfile, format = "GRanges"){
   format = as.character(format)
-  nfrDF=readr::read_tsv(nfrfile,col_names = c('chr','start','end',"z","occ","min_occ_lower","min_occ_upper"))
+  nfrDF=readr::read_tsv(nfrfile, col_names = FALSE)
+  if (ncol(nfrDF) == 7){
+     colnames(nfrDF) = c('chr','start','end',"occ","min_occ_upper","ins_density","bias_density")
+  } else if (ncol(nfrDF) == 8){
+    colnames(nfrDF) = c('chr','start','end',"occ","min_occ_upper","ins_density","bias_density","nfr_signal")
+  }
   if (format=="data.frame"){
     return(nfrDF)
   }
   else if (format=="GRanges"){
-    return(with(n,GRanges(chr,IRanges(start,start), 
+    if (ncol(nfrDF) == 7){
+      return(with(nfrDF,GenomicRanges::GRanges(chr,IRanges(start,end-1), 
                           occ = occ, 
-                          min_occ_lower = min_occ_lower, 
-                          min_occ_upper = min_occ_upper))) 
+                          min_occ_upper = min_occ_upper,
+                          ins = ins_density,
+                          bias = bias_density)))
+    }else if (ncol(nfrDF) == 8){
+      return(with(nfrDF,GenomicRanges::GRanges(chr,IRanges(start,end-1), 
+                                occ = occ, 
+                                min_occ_upper = min_occ_upper,
+                                ins = ins_density,
+                                bias = bias_density,
+                                nfr_signal = nfr_signal)))
+    }
   }
   else{
     stop("Format must equal either GRanges or data.frame")
@@ -91,7 +106,7 @@ readNFRs<-function(nfrfile, format = "GRanges"){
 #' @seealso \code{\link{readNucs}}  \code{\link{readNFRs}}
 #' @export
 readBedgraph<-function(bgfile, chrom, start, end, empty = NA){
-  tmp = Rsamtools::scanTabix(bgfile, param = GRanges(chrom, IRanges(start,end-1)))
+  tmp = Rsamtools::scanTabix(bgfile, param = GenomicRanges::GRanges(chrom, IRanges::IRanges(start,end-1)))
   out = rep(empty, end - start)
   for (rec in tmp[[1]]){
     vals = as.numeric(strsplit(rec,"\t")[[1]][2:4])
