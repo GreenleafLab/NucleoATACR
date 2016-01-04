@@ -7,13 +7,17 @@ Author: Alicia Schep
 Maintainer: AliciaSchep <aschep@stanford.edu>
 Description: Package to work with outputs of NucleoATAC python package. Includes
     functions for reading in outputs, plotting, etc.
-License: MIT
+License: MIT + file LICENSE
 Imports:
     Rsamtools,
     GenomicRanges,
     readr,
     ggplot2,
-    grid
+    grid,
+    reshape2,
+    RColorBrewer,
+    BiocGenerics,
+    IRanges
 Collate:
     'NucleoATACR-package.R'
     'misc.R'

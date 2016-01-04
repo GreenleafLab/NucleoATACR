@@ -30,23 +30,23 @@ getstrand<- function(ranges){
 #' @param ranges2 GRanges object
 #' @param strand either 1,2, or 0 if dist is relative to strand of ranges1, ranges2, or neither
 #' @return returns either subset of nucs that are +1 or annotated version of sites
-#' @seealso \code{\link{get_m1_nucs}}  \code{\link{get_p1_nucs}}  \code{\link{get_dist_between_calls}} 
+#' @seealso \code{\link{get_m1_nuc}}  \code{\link{get_p1_nuc}}  \code{\link{get_dist_between_calls}} 
 #' @export
 distRanges <- function(ranges1,ranges2, strand = 0){
   ranges1_mod = ranges1
   BiocGenerics::strand(ranges1_mod)="*"
-  neighbor = nearest(ranges1_mod,ranges2)  
+  neighbor = GenomicRanges::nearest(ranges1_mod,ranges2)  
   nna = which(!is.na(neighbor))
   if (strand == 2){
     dists = rep(NA,length(ranges1))
     plus = intersect(which(getstrand(ranges2)[neighbor]!="-"),nna)
     minus = intersect(which(getstrand(ranges2)[neighbor]=="-"),nna)
-    dists[minus] = ifelse(overlapsAny(ranges1[minus],ranges2[neighbor[minus]]),
+    dists[minus] = ifelse(GenomicRanges::overlapsAny(ranges1[minus],ranges2[neighbor[minus]]),
                           0,
                           ifelse(BiocGenerics::start(ranges2[neighbor[minus]])>BiocGenerics::start(ranges1[minus]),
                                  BiocGenerics::start(ranges2)[neighbor[minus]] - BiocGenerics::end(ranges1)[minus],
                                  BiocGenerics::end(ranges2)[neighbor[minus]] - BiocGenerics::start(ranges1)[minus]))
-    dists[plus] = ifelse(overlapsAny(ranges1[plus],ranges2[neighbor[plus]]),
+    dists[plus] = ifelse(GenomicRanges::overlapsAny(ranges1[plus],ranges2[neighbor[plus]]),
                          0,
                          ifelse(BiocGenerics::start(ranges2[neighbor[plus]])>BiocGenerics::start(ranges1[plus]),
                                 BiocGenerics::end(ranges1)[plus] - BiocGenerics::start(ranges2)[neighbor[plus]],
@@ -54,7 +54,7 @@ distRanges <- function(ranges1,ranges2, strand = 0){
   } 
   else if (strand == 0){
     dists = rep(NA,length(ranges1))
-    dists[nna] = ifelse(overlapsAny(ranges1[nna],ranges2[neighbor[nna]]),
+    dists[nna] = ifelse(GenomicRanges::overlapsAny(ranges1[nna],ranges2[neighbor[nna]]),
                          0,
                          ifelse(BiocGenerics::start(ranges2[neighbor[nna]])>BiocGenerics::start(ranges1[nna]),
                                 BiocGenerics::end(ranges1[nna]) - BiocGenerics::start(ranges2)[neighbor[nna]],
@@ -64,12 +64,12 @@ distRanges <- function(ranges1,ranges2, strand = 0){
     dists = rep(NA,length(ranges1))
     plus = intersect(which(getstrand(ranges1)!="-"), nna)
     minus = intersect(which(getstrand(ranges1)=="-"), nna)
-    dists[plus] = ifelse(overlapsAny(ranges1[plus],ranges2[neighbor[plus]]),
+    dists[plus] = ifelse(GenomicRanges::overlapsAny(ranges1[plus],ranges2[neighbor[plus]]),
                           0,
                           ifelse(BiocGenerics::start(ranges2[neighbor[plus]])>BiocGenerics::start(ranges1[plus]),
                                  BiocGenerics::start(ranges2)[neighbor[plus]] - BiocGenerics::end(ranges1)[plus],
                                  BiocGenerics::end(ranges2)[neighbor[plus]] - BiocGenerics::start(ranges1)[plus]))
-    dists[minus] = ifelse(overlapsAny(ranges1[minus],ranges2[neighbor[minus]]),
+    dists[minus] = ifelse(GenomicRanges::overlapsAny(ranges1[minus],ranges2[neighbor[minus]]),
                          0,
                          ifelse(BiocGenerics::start(ranges2[neighbor[minus]])>BiocGenerics::start(ranges1[minus]),
                                 BiocGenerics::end(ranges1)[minus] - BiocGenerics::start(ranges2)[neighbor[minus]],
@@ -89,7 +89,7 @@ distRanges <- function(ranges1,ranges2, strand = 0){
 #' @param ranges GRanges object 
 #' @param shift amount by which to shift ranges (negative means shift upstream, positive downstream)
 #' @return returns GRanges object for which each range has been shifted appropriately
-#' @seealso \code{\link{get_m1_nucs}} \code{\link{get_p1_nucs}} \code{\link{distRanges}} 
+#' @seealso \code{\link{get_m1_nuc}} \code{\link{get_p1_nuc}} \code{\link{distRanges}} 
 #' @export
 shiftRanges <- function(ranges, shift = 0){
   minus = which(getstrand(ranges)=="-")
@@ -112,22 +112,22 @@ shiftRanges <- function(ranges, shift = 0){
 
 #' get_p1_nuc
 #'
-#' @param nuc.ranges GRanges object with nucleosome positions
+#' @param nucs.ranges GRanges object with nucleosome positions
 #' @param sites GRanges object with sites to get +1 nucs from.
 #' @param annotate_sites what to return-- sites with +1 nuc annotation or +1 nucs?
 #' @param max_dist what is maximum distance to consider
 #' @param shift integer shift to apply to sites before finding -1
 #' @return returns either subset of nucs that are +1 or annotated version of sites
-#' @seealso \code{\link{get_m1_nucs}} 
+#' @seealso \code{\link{get_m1_nuc}} 
 #' @export
 get_p1_nuc<-function(nucs.ranges, sites, annotate_sites = F, max_dist = 250, shift = 0){
   plus=which(getstrand(sites) != "-")
   minus=which(getstrand(sites) == "-")
   if (shift!=0){
-     p1 = precede(shiftRanges(sites,shift), nucs.ranges)
+     p1 = GenomicRanges::precede(shiftRanges(sites,shift), nucs.ranges)
   }
   else{
-      p1 = precede(sites,nucs.ranges)  
+      p1 = GenomicRanges::precede(sites,nucs.ranges)  
   }  
   p1_nna = which(!is.na(p1))
   if (length(p1_nna)>0){
@@ -159,22 +159,22 @@ get_p1_nuc<-function(nucs.ranges, sites, annotate_sites = F, max_dist = 250, shi
 
 #' get_m1_nuc
 #'
-#' @param nuc.ranges GRanges object with nucleosome positions
+#' @param nucs.ranges GRanges object with nucleosome positions
 #' @param sites GRanges object with sites to get -1 nucs from.
 #' @param annotate_sites what to return-- sites with -1 nuc annotation or +1 nucs?
 #' @param max_dist what is maximum distance to consider
 #' @param shift integer shift to apply to sites before finding -1
 #' @return returns either subset of nucs that are -1 or annotated version of sites
-#' @seealso \code{\link{get_p1_nucs}} 
+#' @seealso \code{\link{get_p1_nuc}} 
 #' @export
 get_m1_nuc<-function(nucs.ranges,sites, annotate_sites = F, max_dist = 350, shift = 0){
   plus=which(getstrand(sites)!="-")
   minus=which(getstrand(sites)=="-")
   if (shift!=0){
-    m1 = follow(shiftRanges(sites,shift), nucs.ranges)
+    m1 = GenomicRanges::follow(shiftRanges(sites,shift), nucs.ranges)
   }
   else{
-    m1 = follow(sites,nucs.ranges)  
+    m1 = GenomicRanges::follow(sites,nucs.ranges)  
   }    
   m1_nna = which(!is.na(m1))
   m1_nna = m1_nna[which(as.character(GenomicRanges::seqnames(nucs.ranges[m1[m1_nna]]))==as.character(GenomicRanges::seqnames(sites[m1_nna])))]

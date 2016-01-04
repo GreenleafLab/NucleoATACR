@@ -25,7 +25,7 @@ plotV(X, xlabel = "Center position relative to dyad (bp)",
 
 \item{xbreaks}{where to include breaks for x axis}
 
-\item{ylabel}{label for y axis}
+\item{ybreaks}{wehre to include breaks for y axis}
 }
 \value{
 returns ggplot object

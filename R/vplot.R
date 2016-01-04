@@ -75,6 +75,60 @@ vplot_theme <-function(base_size = 7, base_family="Helvetica"){
         plot.margin = unit(c(0.5, 0.5, 0.25, 0.25), "lines"), complete = TRUE)
 }
 
+#' Format numbers in scientific notation
+#'
+#' @param l list of numbers
+#' @return expression with formatted numbers
+#' @seealso \code{\link{pretty_scale_format}} 
+#' @export
+pretty_scientific <- function(l) {
+  # format as scientific
+  l <- format(l, nsmall = 0, scientific = TRUE)
+  # remove + sign
+  l <- gsub("+", "", l, fixed=T)
+  # break into prefix and suffix
+  pre <- sapply(l, function(x) substr(x,1,gregexpr("e",x)[[1]][1]-1))
+  post <- format(as.numeric(sapply(l, function(x) substr(x,gregexpr("e",x)[[1]][1]+1,nchar(x)))))
+  # combine prefix and suffix with plotmath
+  out <- sapply(1:length(l), function(x) paste(pre[x],"%*%10^",post[x],sep="",collapse=""))
+  out[which(pre=="")]=NA
+  # return as expression
+  return(parse(text=out))
+}
+
+#' Determine order of magnitude
+#'
+#' @param x number
+#' @return numeric
+#' @export
+order_of_magnitude <- function(x){
+  if (x==0){
+    return(0)
+  }
+  else if (x< 0){
+    x = -1 * x
+  }
+  return(floor(log10(x)))
+}
+
+#' Format numbers in pretty manner
+#'
+#' @param l list of numbers
+#' @return expression with formatted numbers
+#' @seealso \code{\link{pretty_scientific}} 
+#' @export
+pretty_scale_format <- function(l){
+  digits = order_of_magnitude(max(l)) - order_of_magnitude(min(diff(l))) + 2
+  l = signif(l, digits = digits)
+  if (max(l)>1000){
+    return(pretty_scientific(l))
+  }
+  else if (max(l)<0.001){
+    return(pretty_scientific(l))
+  }
+  else{return(format(l, nsmall = 0))}
+}
+
 
 #' plotV
 #'
@@ -86,7 +140,7 @@ vplot_theme <-function(base_size = 7, base_family="Helvetica"){
 #' @param palette color palette
 #' @param limits limits for color
 #' @param xbreaks where to include breaks for x axis
-#' @param ylabel label for y axis
+#' @param ybreaks wehre to include breaks for y axis
 #' @return returns ggplot object
 #' @seealso \code{\link{read_vplot}} \code{\link{vplot_theme}} 
 #' @import ggplot2
@@ -94,18 +148,18 @@ vplot_theme <-function(base_size = 7, base_family="Helvetica"){
 plotV <- function(X, xlabel = "Center position relative to dyad (bp)", ylabel = "Fragment size (bp)", guide = "Density", name = NA, 
                    palette = "BuPu", limits = NA, xbreaks = NA, ybreaks = NA){
   df = cbind(data.frame("y" = factor(rownames(X), levels = rownames(X), ordered=T)),X)
-  mdf = melt(df, id = "y")
-  p = ggplot(mdf, aes(x=variable, y=y, col = value)) + 
-    geom_raster(aes(fill=value), interpolate=T) + 
+  mdf = reshape2::melt(df, id = "y")
+  p = ggplot(mdf, aes_string(x="variable", y="y", col = "value")) + 
+    geom_raster(aes_string(fill="value"), interpolate=T) + 
     coord_fixed()+
     xlab(xlabel) + ylab(ylabel)+
     vplot_theme(7)
   if (is.na(limits[1])){
     limits = c(0, max(mdf$value))
   }
-  p = p + scale_fill_gradientn(colours = c("white",colorRampPalette(brewer.pal(9,palette))(9)), name = guide, 
+  p = p + scale_fill_gradientn(colours = c("white",colorRampPalette(RColorBrewer::brewer.pal(9,palette))(9)), name = guide, 
                                limits=limits, breaks = limits, labels = pretty_scale_format, expand=c(0,0), guide = guide_colorbar(ticks = F))+
-    scale_colour_gradientn(colours = c("white",colorRampPalette(brewer.pal(9,palette))(9)), name = guide, 
+    scale_colour_gradientn(colours = c("white",colorRampPalette(RColorBrewer::brewer.pal(9,palette))(9)), name = guide, 
                            limits=limits,breaks = limits, labels = pretty_scale_format,expand=c(0,0), guide = F)
   if (is.na(xbreaks[1])){
     xbreaks = seq(as.numeric(colnames(X)[1]),as.numeric(colnames(X)[ncol(X)]),10)

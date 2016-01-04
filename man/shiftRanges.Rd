@@ -18,6 +18,6 @@ returns GRanges object for which each range has been shifted appropriately
 shiftRanges
 }
 \seealso{
-\code{\link{get_m1_nucs}} \code{\link{get_p1_nucs}} \code{\link{distRanges}}
+\code{\link{get_m1_nuc}} \code{\link{get_p1_nuc}} \code{\link{distRanges}}
 }
 

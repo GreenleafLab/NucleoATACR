@@ -8,6 +8,8 @@ get_p1_nuc(nucs.ranges, sites, annotate_sites = F, max_dist = 250,
   shift = 0)
 }
 \arguments{
+\item{nucs.ranges}{GRanges object with nucleosome positions}
+
 \item{sites}{GRanges object with sites to get +1 nucs from.}
 
 \item{annotate_sites}{what to return-- sites with +1 nuc annotation or +1 nucs?}
@@ -15,8 +17,6 @@ get_p1_nuc(nucs.ranges, sites, annotate_sites = F, max_dist = 250,
 \item{max_dist}{what is maximum distance to consider}
 
 \item{shift}{integer shift to apply to sites before finding -1}
-
-\item{nuc.ranges}{GRanges object with nucleosome positions}
 }
 \value{
 returns either subset of nucs that are +1 or annotated version of sites
@@ -25,6 +25,6 @@ returns either subset of nucs that are +1 or annotated version of sites
 get_p1_nuc
 }
 \seealso{
-\code{\link{get_m1_nucs}}
+\code{\link{get_m1_nuc}}
 }
 

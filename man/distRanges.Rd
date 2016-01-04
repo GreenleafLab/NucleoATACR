@@ -20,6 +20,6 @@ returns either subset of nucs that are +1 or annotated version of sites
 distRanges
 }
 \seealso{
-\code{\link{get_m1_nucs}}  \code{\link{get_p1_nucs}}  \code{\link{get_dist_between_calls}}
+\code{\link{get_m1_nuc}}  \code{\link{get_p1_nuc}}  \code{\link{get_dist_between_calls}}
 }
 
