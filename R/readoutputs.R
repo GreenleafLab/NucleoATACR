@@ -25,7 +25,7 @@ readNucs<-function(nucfile, out = "GRanges"){
   }
   else if (out=="GRanges"){
     if (grepl("nucpos.bed",nucfile)){   
-      nucGR = with(nucDF,GenomicRanges::GRanges(chr,IRanges(start,start), 
+      nucGR = with(nucDF,GenomicRanges::GRanges(chr,IRanges::IRanges(start,start), 
                         z=z, 
                         occ = occ, 
                         occ_lower = occ_lower, 
@@ -38,14 +38,14 @@ readNucs<-function(nucfile, out = "GRanges"){
                         fuzz=fuzz))
     }
     else if (grepl("nucmap_combined.bed",nucfile)){
-      nucGR = with(nucDF,GenomicRanges::GRanges(chr,IRanges(start,start), 
+      nucGR = with(nucDF,GenomicRanges::GRanges(chr,IRanges::IRanges(start,start), 
                              occ = occ, 
                              occ_lower = occ_lower, 
                              occ_upper = occ_upper, 
                              type = type))      
     }
     else if (grepl("occpeaks.bed",nucfile)){
-      nucGR = with(nucDF,GenomicRanges::GRanges(chr,IRanges(start,start), 
+      nucGR = with(nucDF,GenomicRanges::GRanges(chr,IRanges::IRanges(start,start), 
                                  occ = occ, 
                                  occ_lower = occ_lower, 
                                  occ_upper = occ_upper))      
@@ -76,13 +76,13 @@ readNFRs<-function(nfrfile, format = "GRanges"){
   }
   else if (format=="GRanges"){
     if (ncol(nfrDF) == 7){
-      return(with(nfrDF,GenomicRanges::GRanges(chr,IRanges(start,end-1), 
+      return(with(nfrDF,GenomicRanges::GRanges(chr,IRanges::IRanges(start,end-1), 
                           occ = occ, 
                           min_occ_upper = min_occ_upper,
                           ins = ins_density,
                           bias = bias_density)))
     }else if (ncol(nfrDF) == 8){
-      return(with(nfrDF,GenomicRanges::GRanges(chr,IRanges(start,end-1), 
+      return(with(nfrDF,GenomicRanges::GRanges(chr,IRanges::IRanges(start,end-1), 
                                 occ = occ, 
                                 min_occ_upper = min_occ_upper,
                                 ins = ins_density,

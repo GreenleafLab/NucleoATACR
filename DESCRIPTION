@@ -8,7 +8,7 @@ Maintainer: AliciaSchep <aschep@stanford.edu>
 Description: Package to work with outputs of NucleoATAC python package. Includes
     functions for reading in outputs, plotting, etc.
 License: MIT + file LICENSE
-Imports:
+Imports: 
     Rsamtools,
     GenomicRanges,
     readr,
@@ -18,9 +18,10 @@ Imports:
     RColorBrewer,
     BiocGenerics,
     IRanges
-Collate:
+Collate: 
     'NucleoATACR-package.R'
     'misc.R'
     'readoutputs.R'
     'relativepositions.R'
     'vplot.R'
+Suggests: testthat

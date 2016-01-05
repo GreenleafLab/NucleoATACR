@@ -31,26 +31,33 @@ tabulate2<-function(x,min_val,max_val){
     p = tabulate(x)[1:max_val]
     z = length(which(x == 0))
     out = c(n,z,p)
+    out[which(is.na(out))] = 0
     names(out)=min_val:max_val
     return(out)}
   else if (min_val==0 && max_val >0){
     p = tabulate(x)[1:max_val]
     z = length(which(x == 0))
     out = c(z,p)
+    out[which(is.na(out))] = 0
     names(out)=min_val:max_val
     return(out)}
   else if (min_val > 0 && max_val >0){
-    p = tabulate(x)[min_val:max_val]
+    out = tabulate(x)[min_val:max_val]
+    out[which(is.na(out))] = 0
+    names(out)=min_val:max_val
+    return(out)
   }
   else if (min_val <0 && max_val == 0){
     n = rev(tabulate(-1*(x))[1:(-min_val)])
     z = length(which(x == 0))
     out = c(n,z)
+    out[which(is.na(out))] = 0
     names(out)=min_val:max_val
     return(out)}
   else if (min_val <0 && max_val < 0){
     n = rev(tabulate(-1*(x))[1:(-min_val)])
     out = n
+    out[which(is.na(out))] = 0
     names(out)=min_val:max_val
     return(out)}
   else{
