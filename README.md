@@ -1,5 +1,5 @@
 # NucleoATACR
-R package for reading in and working with [NucleoATAC](https://github.com/GreenleafLab/NucleoATAC) outputs.
+R package for reading in and working with [NucleoATAC](https://github.com/GreenleafLab/NucleoATAC) outputs. This package doesn't replicate what NucleoATAC does-- just makes it easier to read in the outputs from NucleoATAC for visualizing and post-processing analysis in R.
 
 Also includes functions for finding +1 and -1 nucleosomes, finding distances between nucleosomes, and plotting V-plots.
 
