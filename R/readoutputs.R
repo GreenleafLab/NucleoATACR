@@ -9,13 +9,13 @@
 readNucs<-function(nucfile, out = "GRanges"){
   out = as.character(out)
   if (grepl("nucpos.bed",nucfile)){
-    nucDF=readr::read_tsv(nucfile,col_names = c('chr','start','end',"z","occ","occ_lower","occ_upper","lr","nuc_signal","raw_signal","reads","nfr","fuzz"))   
+    nucDF=as.data.frame(readr::read_tsv(nucfile,col_names = c('chr','start','end',"z","occ","occ_lower","occ_upper","lr","nuc_signal","raw_signal","reads","nfr","fuzz")))   
   }
   else if (grepl("nucmap_combined.bed",nucfile)){
-    nucDF=readr::read_tsv(nucfile,col_names = c('chr','start','end',"occ","occ_lower","occ_upper","reads","type"))       
+    nucDF=as.data.frame(readr::read_tsv(nucfile,col_names = c('chr','start','end',"occ","occ_lower","occ_upper","reads","type")))       
   }
   else if (grepl("occpeaks.bed",nucfile)){
-    nucDF=readr::read_tsv(nucfile,col_names = c('chr','start','end',"occ","occ_lower","occ_upper","reads"))       
+    nucDF=as.data.frame(readr::read_tsv(nucfile,col_names = c('chr','start','end',"occ","occ_lower","occ_upper","reads")))       
   }
   else{
     stop("File name doesn't seem to include stantard format of NucleoATAC output")
@@ -65,7 +65,7 @@ readNucs<-function(nucfile, out = "GRanges"){
 #' @export
 readNFRs<-function(nfrfile, format = "GRanges"){
   format = as.character(format)
-  nfrDF=readr::read_tsv(nfrfile, col_names = FALSE)
+  nfrDF=as.data.frame(readr::read_tsv(nfrfile, col_names = FALSE))
   if (ncol(nfrDF) == 7){
      colnames(nfrDF) = c('chr','start','end',"occ","min_occ_upper","ins_density","bias_density")
   } else if (ncol(nfrDF) == 8){
