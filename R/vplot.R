@@ -35,19 +35,19 @@ vplot_theme <-function(base_size = 7, base_family="Helvetica"){
                             lineend = "butt"), 
         rect = element_rect(fill = "white", colour = "black", size = 0.5, linetype = 1), 
         text = element_text(family = base_family, face = "plain", colour = "black", size = base_size, hjust = 0.5, 
-                            vjust = 0.5, angle = 0, lineheight = 0.9), 
+                            vjust = 0.5, angle = 0, lineheight = 0.9, margin = margin(0.1, unit = "cm"), debug = FALSE), 
         strip.text = element_text(size = rel(0.8)), 
         axis.line = element_blank(),#element_line(colour = "black", size = 0.5), 
-        axis.text = element_text(size = rel(0.8), colour = "black"),
+        axis.text = element_text(size = rel(0.8), colour = "black", margin = margin()),
         axis.text.x = element_text(angle=90, vjust = 0.5, hjust = 1),
         axis.text.y = element_text(hjust = 1), 
         axis.ticks = element_line(colour = "black", size=0.25), 
         axis.title.x = element_text(), 
         axis.title.y = element_text(angle = 90), 
         axis.ticks.length = unit(0.10, "cm"), 
-        axis.ticks.margin = unit(0.1, "cm"), 
+        #axis.ticks.margin = unit(0.1, "cm"), 
         legend.background = element_rect(colour = NA), 
-        legend.margin = unit(0.2, "cm"), 
+        legend.spacing = unit(0.2, "cm"), 
         legend.key = element_blank(), 
         legend.key.size = unit(1.2, "lines"), 
         legend.key.width = unit(0.05, "inches"), 
@@ -64,9 +64,9 @@ vplot_theme <-function(base_size = 7, base_family="Helvetica"){
         panel.border = element_rect(fill = NA,color = "black"), 
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(), 
-        panel.margin = unit(0.25, "lines"), 
-        panel.margin.x = NULL, 
-        panel.margin.y = NULL, 
+        panel.spacing = unit(0.25, "lines"), 
+        panel.spacing.x = NULL, 
+        panel.spacing.y = NULL, 
         strip.background = element_blank(), 
         strip.text.x = element_text(), 
         strip.text.y = element_text(angle = -90), 
@@ -74,6 +74,7 @@ vplot_theme <-function(base_size = 7, base_family="Helvetica"){
         plot.title = element_text(size = rel(1.2)), 
         plot.margin = unit(c(0.5, 0.5, 0.25, 0.25), "lines"), complete = TRUE)
 }
+
 
 #' Format numbers in scientific notation
 #'
