@@ -41,12 +41,12 @@ distRanges <- function(ranges1,ranges2, strand = 0){
     dists = rep(NA,length(ranges1))
     plus = intersect(which(getstrand(ranges2)[neighbor]!="-"),nna)
     minus = intersect(which(getstrand(ranges2)[neighbor]=="-"),nna)
-    dists[minus] = ifelse(GenomicRanges::overlapsAny(ranges1[minus],ranges2[neighbor[minus]]),
+    dists[minus] = ifelse(IRanges::overlapsAny(ranges1[minus],ranges2[neighbor[minus]]),
                           0,
                           ifelse(BiocGenerics::start(ranges2[neighbor[minus]])>BiocGenerics::start(ranges1[minus]),
                                  BiocGenerics::start(ranges2)[neighbor[minus]] - BiocGenerics::end(ranges1)[minus],
                                  BiocGenerics::end(ranges2)[neighbor[minus]] - BiocGenerics::start(ranges1)[minus]))
-    dists[plus] = ifelse(GenomicRanges::overlapsAny(ranges1[plus],ranges2[neighbor[plus]]),
+    dists[plus] = ifelse(IRanges::overlapsAny(ranges1[plus],ranges2[neighbor[plus]]),
                          0,
                          ifelse(BiocGenerics::start(ranges2[neighbor[plus]])>BiocGenerics::start(ranges1[plus]),
                                 BiocGenerics::end(ranges1)[plus] - BiocGenerics::start(ranges2)[neighbor[plus]],
@@ -54,7 +54,7 @@ distRanges <- function(ranges1,ranges2, strand = 0){
   } 
   else if (strand == 0){
     dists = rep(NA,length(ranges1))
-    dists[nna] = ifelse(GenomicRanges::overlapsAny(ranges1[nna],ranges2[neighbor[nna]]),
+    dists[nna] = ifelse(IRanges::overlapsAny(ranges1[nna],ranges2[neighbor[nna]]),
                          0,
                          ifelse(BiocGenerics::start(ranges2[neighbor[nna]])>BiocGenerics::start(ranges1[nna]),
                                 BiocGenerics::end(ranges1[nna]) - BiocGenerics::start(ranges2)[neighbor[nna]],
@@ -64,12 +64,12 @@ distRanges <- function(ranges1,ranges2, strand = 0){
     dists = rep(NA,length(ranges1))
     plus = intersect(which(getstrand(ranges1)!="-"), nna)
     minus = intersect(which(getstrand(ranges1)=="-"), nna)
-    dists[plus] = ifelse(GenomicRanges::overlapsAny(ranges1[plus],ranges2[neighbor[plus]]),
+    dists[plus] = ifelse(IRanges::overlapsAny(ranges1[plus],ranges2[neighbor[plus]]),
                           0,
                           ifelse(BiocGenerics::start(ranges2[neighbor[plus]])>BiocGenerics::start(ranges1[plus]),
                                  BiocGenerics::start(ranges2)[neighbor[plus]] - BiocGenerics::end(ranges1)[plus],
                                  BiocGenerics::end(ranges2)[neighbor[plus]] - BiocGenerics::start(ranges1)[plus]))
-    dists[minus] = ifelse(GenomicRanges::overlapsAny(ranges1[minus],ranges2[neighbor[minus]]),
+    dists[minus] = ifelse(IRanges::overlapsAny(ranges1[minus],ranges2[neighbor[minus]]),
                          0,
                          ifelse(BiocGenerics::start(ranges2[neighbor[minus]])>BiocGenerics::start(ranges1[minus]),
                                 BiocGenerics::end(ranges1)[minus] - BiocGenerics::start(ranges2)[neighbor[minus]],

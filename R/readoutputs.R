@@ -5,6 +5,7 @@
 #' @param out desired object type, either data.frame or GRanges
 #' @return returns object of type specified by format, either data.frame or GRanges
 #' @seealso \code{\link{readNFRs}}
+#' @importFrom readr cols col_character
 #' @export
 readNucs<-function(nucfile, out = "GRanges"){
   out = as.character(out)

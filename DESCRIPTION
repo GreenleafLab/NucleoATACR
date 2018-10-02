@@ -28,3 +28,4 @@ Collate:
     'relativepositions.R'
     'vplot.R'
 Suggests: testthat
+RoxygenNote: 6.1.0
